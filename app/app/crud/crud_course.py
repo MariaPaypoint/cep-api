@@ -10,21 +10,38 @@ from app.schemas.course import CourseCreate, CourseUpdate
 
 class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
     def create_with_owner(
-        self, db: Session, *, obj_in: CourseCreate, user: int
+        self, db: Session, *, obj_in: CourseCreate, owner_id: int
     ) -> Course:
         obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data, user=user)
+        db_obj = self.model(**obj_in_data, owner_id=owner_id, is_verified=False)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
     def get_multi_by_owner(
-        self, db: Session, *, user: int, skip: int = 0, limit: int = 100
+        self, db: Session, *, owner_id: int, skip: int = 0, limit: int = 100, language: str = None
     ) -> List[Course]:
+        queries = [Course.owner_id == owner_id]
+        if language:
+            queries.append(Course.language == language)
         return (
             db.query(self.model)
-            .filter(Course.user == user)
+            .filter(*queries)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def get_multi(
+        self, db: Session, *, skip: int = 0, limit: int = 100, language: str = None
+    ) -> List[Course]:
+        queries = []
+        if language:
+            queries.append(Course.language == language)
+        return (
+            db.query(self.model)
+            .filter(*queries)
             .offset(skip)
             .limit(limit)
             .all()

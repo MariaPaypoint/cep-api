@@ -10,14 +10,15 @@ if TYPE_CHECKING:
 
 
 class Course(Base):
-    code: int = Column(Integer, primary_key=True, index=True)
-    # to do: json
-    name_ru = Column(String, index=True)
-    name_en = Column(String, index=True)
+    id: int = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("user.id"))
+    # todo: json?
+    name = Column(String)
+    language = Column(String, index=True)
     image = Column(String)
-    removed = Column(Boolean)
-    verified = Column(Boolean)
-    description = Column(String, index=True)
-    user = Column(Integer, ForeignKey("user.id"))
-    # to do: think, because Gena/internet doesn't recommend
+    is_deleted = Column(Boolean)
+    is_verified = Column(Boolean)
+    is_active = Column(Boolean)
+    description = Column(String)
+    # todo: think, because Gena/internet doesn't recommend
     #user_link: "User" = relationship("User", back_populates="courses")

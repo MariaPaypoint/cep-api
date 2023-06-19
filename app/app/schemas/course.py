@@ -5,38 +5,37 @@ from pydantic import BaseModel
 
 # Shared properties
 class CourseBase(BaseModel):
-    pass
-    # name_ru: Optional[str] = None
-    # name_en: Optional[str] = None
-    # description: Optional[str] = None
+    name: str = None
+    language: str = None
+    image: Optional[str] = None
+    is_active: Optional[bool] = True
+    description: Optional[str] = None
 
 
 # Properties to receive on Course creation
 class CourseCreate(CourseBase):
+    #id: int
     pass
-    # name_ru: str
-    # name_en: str
 
 
 # Properties to receive on Course update
 class CourseUpdate(CourseBase):
-    pass
+    name: Optional[str] = None
+    image: Optional[str] = None
+    description: Optional[str] = None
 
 
 # Properties shared by models stored in DB
 class CourseInDBBase(CourseBase):
-    # code: int
-    # name_en: str
-    # name_ru: str
-    # user: int
-
+    id: Optional[int] = None
+    
     class Config:
         orm_mode = True
 
 
 # Properties to return to client
 class Course(CourseInDBBase):
-    pass
+    is_verified: bool
 
 
 # Properties properties stored in DB
