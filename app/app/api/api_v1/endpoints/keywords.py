@@ -9,24 +9,27 @@ from app.api import deps
 router = APIRouter()
 
 # todo: добавить фильтр по языкам
-@router.get("/", response_model=List[schemas.Course])
-def read_courses(
+@router.get("/", response_model=List[schemas.Keyword])
+# @router.get("/")
+def read_keywords(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_user),
-    language: str | None = None,
+    # current_user: models.User = Depends(deps.get_current_active_user),
+    alias: str | None = None,
 ) -> Any:
     """
     Retrieve course.
     """
-    if crud.user.is_superuser(current_user):
-        courses = crud.course.get_multi(db, skip=skip, limit=limit, language=language)
-    else:
-        courses = crud.course.get_multi_by_owner(db=db, owner_id=current_user.id, skip=skip, limit=limit, language=language)
-    return courses
+    # if crud.user.is_superuser(current_user):
+        # courses = crud.course.get_multi(db, skip=skip, limit=limit, language=language)
+    # else:
+        # courses = crud.course.get_multi_by_owner(db=db, owner_id=current_user.id, skip=skip, limit=limit, language=language)
+        
+    keywords = crud.keyword.get_multi(db, skip=skip, limit=limit, alias=alias)
+    return keywords
 
-
+'''
 @router.post("/", response_model=schemas.Course)
 def create_course(
     *,
@@ -105,3 +108,4 @@ def delete_course(
         raise HTTPException(status_code=400, detail="Not enough permissions")
     course = crud.course.remove(db=db, id=id)
     return course
+'''

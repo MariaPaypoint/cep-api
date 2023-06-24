@@ -1,6 +1,7 @@
 from .crud_item import item
 from .crud_user import user
 from .crud_course import course
+from .crud_keyword import keyword
 
 # For a new basic set of CRUD operations you could just do
 

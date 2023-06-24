@@ -9,6 +9,7 @@ from app.schemas.course import CourseCreate, CourseUpdate
 
 
 class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
+
     def create_with_owner(
         self, db: Session, *, obj_in: CourseCreate, owner_id: int
     ) -> Course:
@@ -46,6 +47,6 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
             .limit(limit)
             .all()
         )
-
+        
 
 course = CRUDCourse(Course)
