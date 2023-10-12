@@ -26,5 +26,6 @@ class Keyword_Value(Base):
     group_id = Column(Integer, ForeignKey("keyword_group.id"), index=True) # 
     code = Column(String)
     value = Column(String)
+    language = Column(String)
 
     group = relationship("Keyword_Group", back_populates="values")

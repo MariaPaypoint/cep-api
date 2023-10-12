@@ -2,10 +2,11 @@ from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 from app.crud.base import CRUDBase
 from app.models.course import Course
-from app.schemas.course import CourseCreate, CourseUpdate
+from app.schemas.course import CourseCreate, CourseUpdate, CourseInfo
 
 
 class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
@@ -33,20 +34,36 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
             .limit(limit)
             .all()
         )
-
-    def get_multi(
-        self, db: Session, *, skip: int = 0, limit: int = 100, language: str = None
-    ) -> List[Course]:
-        queries = []
-        if language:
-            queries.append(Course.language == language)
-        return (
-            db.query(self.model)
-            .filter(*queries)
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
+    
+    def search_multi(
+        self, db: Session, skip: int = 0, limit: int = 100, language: str = None
+    ) -> List[CourseInfo]:
+        # queries = []
+        # if language:
+            # queries.append(Course.language == language)
+        # return (
+            # db.query(self.model)
+            # .filter(*queries)
+            # .offset(skip)
+            # .limit(limit)
+            # .all()
+        # )
         
+        sql = '''
+            SELECT id, name, language, image, description, owner_id
+            FROM %(course)s
+            WHERE 1=1
+              AND is_verified = true
+              AND is_active   = true
+            ORDER BY name
+        ''' % {
+            'course': Course.__tablename__,
+        }
+        result = db.execute(text(sql).params({
+            # 'alias': alias,
+        })).all()
+        
+        return result
+
 
 course = CRUDCourse(Course)

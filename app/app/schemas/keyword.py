@@ -30,6 +30,7 @@ class KeywordInDBBase(KeywordBase):
 class KeywordValue(BaseModel):
     code: str
     value: str
+    language: str
 
 # Properties to return to client
 class Keyword(KeywordInDBBase):

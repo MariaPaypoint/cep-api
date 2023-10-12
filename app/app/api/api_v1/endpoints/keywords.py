@@ -17,6 +17,7 @@ def read_keywords(
     limit: int = 100,
     # current_user: models.User = Depends(deps.get_current_active_user),
     alias: str | None = None,
+    language: str | None = None,
 ) -> Any:
     """
     Retrieve course.
@@ -26,7 +27,10 @@ def read_keywords(
     # else:
         # courses = crud.course.get_multi_by_owner(db=db, owner_id=current_user.id, skip=skip, limit=limit, language=language)
         
-    keywords = crud.keyword.get_multi(db, skip=skip, limit=limit, alias=alias)
+    if not crud.keyword.exist(db=db, alias='language', code=language):
+        raise HTTPException(status_code=404, detail="Language not found")
+    
+    keywords = crud.keyword.get_multi(db, skip=skip, limit=limit, alias=alias, language=language)
     return keywords
 
 '''

@@ -76,15 +76,17 @@ class CRUDKeyword(CRUDBase[Keyword_Group, KeywordCreate, KeywordUpdate]):
         return result
     
     def get_multi(
-        self, db: Session, *, skip: int = 0, limit: int = 100, alias: str = None
+        self, db: Session, *, skip: int = 0, limit: int = 100, alias: str = None, language: str = None
     # ) -> List[Keyword_Group]:
     ) -> List:
         filter = []
         if alias:
             filter.append('AND g.alias = :alias')
+        if language:
+            filter.append('AND v.language = :language')
             
         sql = '''
-            SELECT g.id, g.alias, v.code, v.value
+            SELECT g.id, g.alias, v.code, v.value, v.language
             FROM %(keyword_value)s AS v
               LEFT JOIN %(keyword_group)s AS g ON g.id = v.group_id
             WHERE 1=1
@@ -97,6 +99,7 @@ class CRUDKeyword(CRUDBase[Keyword_Group, KeywordCreate, KeywordUpdate]):
         }
         result = db.execute(text(sql).params({
             'alias': alias,
+            'language': language,
         })).all()
 
         # groups_with_values = []
@@ -119,19 +122,15 @@ class CRUDKeyword(CRUDBase[Keyword_Group, KeywordCreate, KeywordUpdate]):
                 g = {
                     "id": row.id,
                     "alias": row.alias,
-                    "items": [
-                        {
-                            "code": row.code,
-                            "value": row.value,
-                        }
-                    ]
+                    "items": []
                 }
                 old_gid = row.id
-            else:
-                g['items'].append({
-                    "code": row.code,
-                    "value": row.value,
-                })
+            
+            g['items'].append({
+                "code": row.code,
+                "value": row.value,
+                "language": row.language,
+            })
                 
         if g:
             groups_with_values.append(g)

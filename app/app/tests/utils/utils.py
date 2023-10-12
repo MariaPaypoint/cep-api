@@ -5,7 +5,8 @@ from typing import Dict
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
-
+from app import crud
+from sqlalchemy.orm import Session
 
 def random_lower_string() -> str:
     return "".join(random.choices(string.ascii_lowercase, k=32))
@@ -28,3 +29,7 @@ def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
+
+def random_keyword(db: Session, alias) -> str:
+    kvalues = crud.keyword.get_values(db=db, alias=alias)
+    return random.choice(kvalues).code

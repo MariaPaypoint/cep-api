@@ -7,6 +7,7 @@ Create Date: 2023-06-24 00:35:31.534868
 """
 from alembic import op
 import sqlalchemy as sa
+from app.alembic_utils import keyword_group, keyword_value
 
 
 # revision identifiers, used by Alembic.
@@ -15,62 +16,76 @@ down_revision = '562487d42682'
 branch_labels = None
 depends_on = None
 
+group_id = 2
 
 def upgrade():
    
-    keyword_group = sa.table(
-        "keyword_group",
-        sa.column("id", sa.Integer()),
-        sa.column("alias", sa.String()),
-    )
     op.bulk_insert(
         keyword_group,
         [
             {
-                "id": 2,
+                "id": group_id,
                 "alias": "task_group",
             },
         ],
     )
     
-    keyword_value = sa.table(
-        "keyword_value",
-        sa.column("id", sa.Integer()),
-        sa.column("group_id", sa.Integer()),
-        sa.column("code", sa.String()),
-        sa.column("value", sa.String()),
-    )
     op.bulk_insert(
         keyword_value,
         [
             {
-                "id": 3,
-                "group_id": 2,
-                "code": "introduction",
-                "value": "Знакомство",
+                "group_id" : group_id,
+                "code"     : "introduction",
+                "value"    : "Introduction",
+                "language" : "en",
             },
             {
-                "id": 4,
-                "group_id": 2,
-                "code": "quote",
-                "value": "Учим цитату",
+                "group_id" : group_id,
+                "code"     : "quote",
+                "value"    : "Learning a quote",
+                "language" : "en",
             },
             {
-                "id": 5,
-                "group_id": 2,
-                "code": "discussion",
-                "value": "Обсуждение",
+                "group_id" : group_id,
+                "code"     : "discussion",
+                "value"    : "Discussion",
+                "language" : "en",
             },
             {
-                "id": 6,
-                "group_id": 2,
-                "code": "fixing",
-                "value": "Закрепление",
+                "group_id" : group_id,
+                "code"     : "fixing",
+                "value"    : "Repetition",
+                "language" : "en",
+            },
+            
+            {
+                "group_id" : group_id,
+                "code"     : "introduction",
+                "value"    : "Знакомство",
+                "language" : "ru",
+            },
+            {
+                "group_id" : group_id,
+                "code"     : "quote",
+                "value"    : "Учим цитату",
+                "language" : "ru",
+            },
+            {
+                "group_id" : group_id,
+                "code"     : "discussion",
+                "value"    : "Обсуждение",
+                "language" : "ru",
+            },
+            {
+                "group_id" : group_id,
+                "code"     : "fixing",
+                "value"    : "Закрепление",
+                "language" : "ru",
             },
         ],
     )
 
 def downgrade():
-    op.execute("DELETE FROM keyword_value WHERE group_id=2")
-    op.execute("DELETE FROM keyword_group WHERE id=2")
+    op.execute("DELETE FROM keyword_value WHERE group_id=%s" % group_id)
+    op.execute("DELETE FROM keyword_group WHERE id=%s" % group_id)
     

@@ -16,6 +16,8 @@ from app.utils import (
     verify_password_reset_token,
 )
 
+from fastapi.responses import JSONResponse
+
 router = APIRouter()
 
 
@@ -26,6 +28,10 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
+    #return JSONResponse(
+    #    status_code=422,
+    #    content={"detail": [{"loc": ["string1",0],"msg": "string2","type": "string3"}]},
+    #)
     user = crud.user.authenticate(
         db, email=form_data.username, password=form_data.password
     )
